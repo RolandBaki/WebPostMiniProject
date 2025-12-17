@@ -1,0 +1,78 @@
+<app-navbar></app-navbar>
+<app-back-button></app-back-button>
+<div class="register-container">
+  <h2>Regisztráció</h2>
+  <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input 
+        type="text" 
+        id="username"
+        placeholder="Username" 
+        [(ngModel)]="username"
+        name="username"
+        required
+        maxlength="50"
+        [disabled]="isLoading"
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email"
+        placeholder="email@example.com" 
+        [(ngModel)]="email"
+        name="email"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        id="password"
+        placeholder="Password (min. 6 characters)" 
+        [(ngModel)]="password"
+        name="password"
+        required
+        minlength="6"
+        maxlength="100"
+        [disabled]="isLoading"
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="ageGroup">Age Group</label>
+      <select 
+        id="ageGroup"
+        [(ngModel)]="ageGroup"
+        name="ageGroup"
+        required
+        [disabled]="isLoading"
+      >
+        <option *ngFor="let group of ageGroups" [ngValue]="group.value">
+          {{ group.label }}
+        </option>
+      </select>
+    </div>
+    
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    
+    <div *ngIf="errors.length > 0" class="error-list">
+      <ul>
+        <li *ngFor="let error of errors">{{ error }}</li>
+      </ul>
+    </div>
+    
+    <button type="submit" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Registration</span>
+      <span *ngIf="isLoading">Registration...</span>
+    </button>
+  </form>
+</div>

@@ -1,0 +1,53 @@
+<div class="blogs-container">
+  <p *ngIf="!authService.isLoggedIn()">Please log in to see the blogs</p>
+
+  <ng-container *ngIf="authService.isLoggedIn()">
+    <div *ngIf="loading" class="info">Loading blog posts...</div>
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <div *ngIf="!loading && !errorMessage && posts.length === 0" class="info">
+      No blog posts yet.
+    </div>
+
+    <div *ngIf="!loading && !errorMessage && posts.length > 0" class="posts-list">
+      <div class="post-card" *ngFor="let post of posts">
+        <div class="post-header">
+          <h3>{{ post.title }}</h3>
+          <span class="meta">
+            {{ post.createdDate ? (post.createdDate | date:'yyyy.MM.dd HH:mm') : '' }}
+            <ng-container *ngIf="post.postType !== undefined"> · {{ getPostTypeName(post.postType) }}</ng-container>
+            <ng-container *ngIf="post.createdByUsername"> · by {{ post.createdByUsername }}</ng-container>
+          </span>
+          <div *ngIf="isAdmin" class="action-buttons">
+            <button class="icon-button" title="Modify blog" (click)="editBlog(post.id)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.333 2.00001C11.5084 1.82465 11.7163 1.68626 11.9447 1.59239C12.1731 1.49853 12.4177 1.45117 12.6667 1.45117C12.9156 1.45117 13.1602 1.49853 13.3886 1.59239C13.617 1.68626 13.8249 1.82465 14 2.00001C14.1754 2.17537 14.3138 2.3833 14.4076 2.6117C14.5015 2.8401 14.5488 3.0847 14.5488 3.33368C14.5488 3.58266 14.5015 3.82722 14.4076 4.05562C14.3138 4.28402 14.1754 4.49195 14 4.66734L5.00001 13.6673L1.33334 14.6673L2.33334 11.0007L11.333 2.00001Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="icon-button delete-button" title="Delete blog" (click)="deleteBlog(post.id)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 4H14M12.6667 4V13.3333C12.6667 13.687 12.5262 14.0261 12.2761 14.2761C12.0261 14.5262 11.687 14.6667 11.3333 14.6667H4.66667C4.31305 14.6667 3.97391 14.5262 3.72386 14.2761C3.47381 14.0261 3.33334 13.687 3.33334 13.3333V4M5.33334 4V2.66667C5.33334 2.31305 5.47381 1.97391 5.72386 1.72386C5.97391 1.47381 6.31305 1.33334 6.66667 1.33334H9.33334C9.68696 1.33334 10.0261 1.47381 10.2761 1.72386C10.5262 1.97391 10.6667 2.31305 10.6667 2.66667V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="content-wrapper">
+          <p class="content">
+            <span *ngIf="!isExpanded(post.id)">{{ getShortContent(post.content) }}</span>
+            <span *ngIf="isExpanded(post.id)">{{ post.content }}</span>
+          </p>
+          <button 
+            *ngIf="post.content.length > 200" 
+            class="read-more-button"
+            (click)="toggleExpand(post.id)">
+            {{ isExpanded(post.id) ? 'Read less' : 'Read more' }}
+          </button>
+          <div class="comment-section">
+            <app-comments [postId]="post.id" [post]="post"></app-comments>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

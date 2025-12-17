@@ -1,0 +1,34 @@
+<app-navbar></app-navbar>
+<app-back-button></app-back-button>
+<div class="login-container">
+  <h2>Log in</h2>
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <div class="form-group">
+      <input 
+        type="text" 
+        placeholder="Felhasználónév" 
+        [(ngModel)]="username"
+        name="username"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+    <div class="form-group">
+      <input 
+        type="password" 
+        placeholder="Jelszó" 
+        [(ngModel)]="password"
+        name="password"
+        required
+        [disabled]="isLoading"
+      />
+    </div>
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    <button type="submit" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Log In</span>
+      <span *ngIf="isLoading">Logging in...</span>
+    </button>
+  </form>
+</div>

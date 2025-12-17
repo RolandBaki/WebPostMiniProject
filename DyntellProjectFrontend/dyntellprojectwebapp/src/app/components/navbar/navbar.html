@@ -1,0 +1,16 @@
+<nav class="navbar">
+ <h1 class="title" routerLink="/" style="cursor: pointer;">MyBlog</h1>
+  <button *ngIf="!loggedIn" class="button" routerLink="/login">
+    Login
+  </button>
+  <button *ngIf="!loggedIn" class="button" routerLink="/register">
+    Register
+  </button>
+  <button *ngIf="loggedIn && isAdmin" class="button" routerLink="/add-blog">
+    Add blog
+  </button>
+  <button *ngIf="loggedIn" class="button" (click)="onLogout()">
+    Log out
+  </button>
+
+</nav>

@@ -1,0 +1,48 @@
+########################
+# .NET / Visual Studio #
+########################
+
+# Build output
+[Bb]in/
+[Oo]bj/
+/DyntellProject/**/bin/
+/DyntellProject/**/obj/
+
+# VS / Rider / tooling
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+logs/
+*.log
+/DyntellProject/**/logs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+#################
+# Angular / npm #
+#################
+
+node_modules/
+npm-debug.log*
+yarn.lock
+package-lock.json
+
+# Angular build output
+dist/
+/DyntellProjectFrontend/**/dist/
+/DyntellProjectFrontend/**/.angular/
+
+# Others
+*.tmp
+*.swp
+*.swo
+
+

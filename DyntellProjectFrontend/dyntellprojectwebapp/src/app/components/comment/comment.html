@@ -1,0 +1,172 @@
+<div class="comments-container">
+  <div class="comments-header">
+    <h4>Comments</h4>
+    <!-- Add comment -->
+    <button 
+      *ngIf="authService.isLoggedIn() && !showCommentForm" 
+      type="button"
+      class="add-comment-button"
+      (click)="toggleCommentForm()">
+      Add comment
+    </button>
+    <button 
+      *ngIf="authService.isLoggedIn() && showCommentForm" 
+      type="button"
+      class="cancel-comment-button"
+      (click)="toggleCommentForm()">
+      Cancel
+    </button>
+  </div>
+  
+  <!-- New comment form, ha rakattintunk a gombra -->
+  <div class="new-comment-form" *ngIf="authService.isLoggedIn() && showCommentForm">
+    <textarea 
+      [(ngModel)]="newCommentContent"
+      placeholder="Write a comment..."
+      rows="3"
+      [disabled]="isLoading"
+    ></textarea>
+    <button 
+      type="button" 
+      (click)="onSubmitComment()" 
+      [disabled]="isLoading || !newCommentContent.trim()"
+      class="submit-button">
+      {{ isLoading ? 'Posting...' : 'Post Comment' }}
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+  <!-- Kommentek listaja -->
+  <div class="comments-list" *ngIf="comments.length > 0">
+    <div class="comment-item" *ngFor="let comment of comments" [style.margin-left.px]="comment.depth * 20">
+      <div class="comment-header">
+        <span class="comment-author">{{ comment.username }}</span>
+        <span class="comment-date">{{ comment.createdDate | date:'yyyy.MM.dd HH:mm' }}</span>
+        <button 
+          *ngIf="isCommentOwner(comment) || authService.isAdmin()" 
+          class="delete-comment-button"
+          (click)="deleteComment(comment.id)"
+          title="Delete comment">
+          ×
+        </button>
+      </div>
+      <div class="comment-content">{{ comment.content }}</div>
+      
+      <!-- Valasz gomb es form -->
+      <div class="comment-actions" *ngIf="authService.isLoggedIn() && canReply(comment)">
+        <button 
+          class="reply-button"
+          (click)="toggleReply(comment.id)">
+          {{ replyingTo === comment.id ? 'Cancel' : 'Reply' }}
+        </button>
+        
+        <div class="reply-form" *ngIf="replyingTo === comment.id">
+          <textarea 
+            [(ngModel)]="replyContent[comment.id]"
+            placeholder="Write a reply..."
+            rows="2"
+            [disabled]="isLoading"
+          ></textarea>
+          <button 
+            type="button"
+            (click)="onSubmitReply(comment.id)"
+            [disabled]="isLoading || !replyContent[comment.id]?.trim()"
+            class="submit-button">
+            {{ isLoading ? 'Posting...' : 'Post Reply' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Valaszok -->
+      <div class="replies" *ngIf="comment.replies && comment.replies.length > 0">
+        <div class="comment-item" *ngFor="let reply of comment.replies" [style.margin-left.px]="reply.depth * 20">
+          <div class="comment-header">
+            <span class="comment-author">{{ reply.username }}</span>
+            <span class="comment-date">{{ reply.createdDate | date:'yyyy.MM.dd HH:mm' }}</span>
+            <button 
+              *ngIf="isCommentOwner(reply) || authService.isAdmin()" 
+              class="delete-comment-button"
+              (click)="deleteComment(reply.id)"
+              title="Delete comment">
+              ×
+            </button>
+          </div>
+          <div class="comment-content">{{ reply.content }}</div>
+          
+          <!-- Vlasz gomb es form -->
+          <div class="comment-actions" *ngIf="authService.isLoggedIn() && canReply(reply)">
+            <button 
+              class="reply-button"
+              (click)="toggleReply(reply.id)">
+              {{ replyingTo === reply.id ? 'Cancel' : 'Reply' }}
+            </button>
+            
+            <div class="reply-form" *ngIf="replyingTo === reply.id">
+              <textarea 
+                [(ngModel)]="replyContent[reply.id]"
+                placeholder="Write a reply..."
+                rows="2"
+                [disabled]="isLoading"
+              ></textarea>
+              <button 
+                type="button"
+                (click)="onSubmitReply(reply.id)"
+                [disabled]="isLoading || !replyContent[reply.id]?.trim()"
+                class="submit-button">
+                {{ isLoading ? 'Posting...' : 'Post Reply' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- valaszok valaszai -->
+          <div class="replies" *ngIf="reply.replies && reply.replies.length > 0">
+            <div class="comment-item" *ngFor="let nestedReply of reply.replies" [style.margin-left.px]="nestedReply.depth * 20">
+              <div class="comment-header">
+                <span class="comment-author">{{ nestedReply.username }}</span>
+                <span class="comment-date">{{ nestedReply.createdDate | date:'yyyy.MM.dd HH:mm' }}</span>
+                <button 
+                  *ngIf="isCommentOwner(nestedReply) || authService.isAdmin()" 
+                  class="delete-comment-button"
+                  (click)="deleteComment(nestedReply.id)"
+                  title="Delete comment">
+                  ×
+                </button>
+              </div>
+              <div class="comment-content">{{ nestedReply.content }}</div>
+              
+              <!-- valasz gomb es form -->
+              <div class="comment-actions" *ngIf="authService.isLoggedIn() && canReply(nestedReply)">
+                <button 
+                  class="reply-button"
+                  (click)="toggleReply(nestedReply.id)">
+                  {{ replyingTo === nestedReply.id ? 'Cancel' : 'Reply' }}
+                </button>
+                
+                <div class="reply-form" *ngIf="replyingTo === nestedReply.id">
+                  <textarea 
+                    [(ngModel)]="replyContent[nestedReply.id]"
+                    placeholder="Write a reply..."
+                    rows="2"
+                    [disabled]="isLoading"
+                  ></textarea>
+                  <button 
+                    type="button"
+                    (click)="onSubmitReply(nestedReply.id)"
+                    [disabled]="isLoading || !replyContent[nestedReply.id]?.trim()"
+                    class="submit-button">
+                    {{ isLoading ? 'Posting...' : 'Post Reply' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="comments.length === 0" class="no-comments">
+    No comments yet. Be the first to comment!
+  </div>
+</div>
